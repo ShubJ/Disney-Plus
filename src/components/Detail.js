@@ -1,15 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useParams } from 'react-router-dom';
+import db from '../firebase';
+import { setMovies } from '../features/movie/movieSlice';
 
 function Detail() {
+    const { id } = useParams();
+    const { movie, setMovie } = useState();
+
+    useEffect(() => {
+        // Grab the movie info from DB.
+        db.collection("movies").doc(id).get().then((doc) => {
+            if (doc.exists) {
+                // save the movie data.
+                setMovies(doc.data());
+            } else {
+                // redirect to home page.
+            }
+        })
+    }, []);
+
+
     return (
         <Container>
             <Background>
-                <img src="/images/viewers-disney.png" />
+                <img src={movie && movie.backgroundImg || "/images/viewers-disney.png"} />
             </Background>
 
             <ImageTitle>
-                <img src="/images/viewers-disney.png" />
+                <img src={movie && movie.titleImg || "/images/viewers-disney.png"} />
             </ImageTitle>
 
             <Controls>
@@ -33,11 +52,11 @@ function Detail() {
             </Controls>
 
             <SubTitle>
-                This is Placeholder Text for Subtitle
+                {movie && movie.subTitle || "This is Placeholder Text for Subtitle"}
             </SubTitle>
 
             <Description>
-                This is Placeholder Text for Description
+                {movie && movie.description || "This is Placeholder Text for Description"}
             </Description>
         </Container>
     )
